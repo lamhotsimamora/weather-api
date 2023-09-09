@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuaca / Weather</title>
+    <link rel="stylesheet" href="assets/css/paper.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/lamhotsimamora/jnet@master/dist/js/jnet.js"></script>
+</head>
+
+<body>
+    <br><br>
+    <div class="container" id="app">
+        <div class="card" style="width: auto;">
+            <div class="card-body">
+                <h4 class="card-title">Cuaca Terkini</h4>
+                <hr>
+                <h5 class="card-subtitle">
+                    <div class="form-group">
+                        <label for="paperInputs1">Kota/Negara</label>
+                        <input type="text" v-model="query" ref="query" @keypress="enterCuaca($event)" placeholder="Kota/Negara" id="paperInputs1">
+                    </div>
+                </h5>
+                <p class="card-text"></p>
+                <button class="btn-success" @click="loadCuaca">Tampilkan</button>
+                <hr>
+                <h5 v-if="loading"><span class="badge danger">Please Wait</span></h5>
+                <h2><span class="badge secondary">{{queryApi}}</span></h2>
+                <h3><img :src="icons" alt=""><span class="badge success">{{weather}}</span></h3>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                query: null,
+                queryApi: null,
+                weather: null,
+                icons: null,
+                loading: false
+            },
+            methods: {
+                enterCuaca: function(e) {
+                    if (e.keyCode == 13) {
+                        this.loadCuaca();
+                    }
+                },
+                loadCuaca: function() {
+                    if (this.query == null) {
+                        this.$refs.query.focus()
+                        return;
+                    }
+                    this.loading = true;
+                    jnet({
+                        url: 'http://api.weatherstack.com/current?access_key=91444e1b0d84e51886ceaa9383b81053&query=' + this.query
+                    }).request($response => {
+                        this.loading = false
+                        let $obj = JSON.parse($response);
+                        if ($obj) {
+                            console.log($obj)
+                            var request = $obj.request;
+                            var location = $obj.location;
+                            var current = $obj.current;
+
+                            var query = request.query;
+
+                            this.queryApi = query;
+
+                            var icon = current.weather_icons;
+                            var desc = current.weather_descriptions;
+
+                            this.weather = desc
+                            this.icons = icon
+                        }
+                    })
+                }
+            },
+            mounted() {
+
+            }
+        })
+    </script>
+
+</body>
+
+</html>

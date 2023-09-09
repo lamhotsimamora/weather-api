@@ -1,0 +1,1 @@
+http://api.weatherstack.com/current?access_key=91444e1b0d84e51886ceaa9383b81053&query=Jambi
